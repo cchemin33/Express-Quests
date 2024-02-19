@@ -1,11 +1,32 @@
 const database = require('../../database');
 
-const postUsers = (req, res) => {
-  const { title, director, year, color, duration } = req.body;
+const updateUsers = (req, res) => {
+  const id = parseInt(req.params.id);
+  const { firstname, lastname, email, city } = req.body;
   database
     .query(
-      "INSERT INTO users(title, director, year, color, duration) VALUES (?, ?, ?, ?, ?)",
-      [title, director, year, color, duration]
+      "UPDATE users SET firstname = ?, lastname = ?, email = ?, city = ? WHERE id = ?",
+      [firstname, lastname, email, city, id]
+    )
+    .then(([result]) => {
+      if (result.affectedRows === 0) {
+        res.sendStatus(404);
+      } else {
+        res.sendStatus(204);
+      }
+    })
+    .catch((err) => {
+      console.error(err);
+      res.sendStatus(500);
+});
+};
+
+const postUsers = (req, res) => {
+  const { firstname, lastname, email, city } = req.body;
+  database
+    .query(
+      "INSERT INTO users(firstname, lastname, email, city) VALUES (?, ?, ?, ?)",
+      [firstname, lastname, email, city]
     )
     .then(([result]) => {
       res.status(201).send({id: result.insertId});
@@ -50,4 +71,5 @@ module.exports = {
   getUsers,
   getUsersById,
   postUsers,
+  updateUsers,
 };
