@@ -56,10 +56,31 @@ const postUsers = (req, res) => {
 };
 
 const getUsers = (req, res) => {
+  let sql = "select * from users";
+  const sqlValues = [];
+
+  if (req.query.language != null) {
+    sql += " where language = ?";
+    sqlValues.push(req.query.language);
+  }
+
+  if (req.query.city != null) {
+    if (sql.indexOf("where") === -1) {
+      sql += " where city = ?";
+    } else {
+      sql += " and city = ?";
+    }
+    sqlValues.push(req.query.city);
+  }
+
   database
-    .query("select * from users")
+    .query(sql, sqlValues)
     .then(([users]) => {
-      res.status(200).json(users);
+      if (users.length === 0) {
+        res.sendStatus(204);
+      } else {
+        res.status(200).json(users);
+      }
     })
     .catch((err) => {
       console.error(err);
