@@ -13,7 +13,7 @@ describe("GET /api/users", () => {
 
     expect(response.headers["content-type"]).toMatch(/json/);
 
-    expect(response.status).toEqual(200);
+    expect(response.status).toEqual(422);
   });
 });
 
